@@ -1,0 +1,376 @@
+  <!DOCTYPE html>
+<html>
+<body style="background-color:black;"></body>
+
+<title> Spacehunt </title>
+
+<head><!--G.S.S. OldSpice Bridge Display-->
+  <script type="text/javascript" src="map.js"> </script>
+  <script type="text/javascript" src="game_settings.js"> </script>
+  <script type="text/javascript" src="wormhole.js"> </script>
+  <script type="text/javascript" src="artifact.js"> </script>
+  <script type="text/javascript" src="game.js"> </script>
+  <script type="text/javascript" src="ship.js"> </script>
+  <script type="text/javascript" src="planets.js"> </script>
+  <script type="text/javascript" src="sensors.js"> </script>
+  <script type="text/javascript" src="game_over.js"> </script>
+  <script type="text/javascript" src="fill.js"></script>
+
+  <meta charset="utf-8"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+</head>
+
+<style>
+  body {
+  color: lightgreen;
+  font-family: 'Courier New', Courier, monospace;
+  }
+  * {
+    padding: 0;
+    margin: 0;
+  }
+  .column{
+    float: left;
+    height: 10em;
+    padding: 3%;
+    width: 100%;
+    overflow-y: scroll;
+    text-align: justify;
+  }
+  .row{
+    display: flex;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2em;
+    font-weight: 40;
+    color: lightgreen;
+    border: thick groove;
+  }
+  #content{
+    /*background-color: #428aca;*/
+  }
+  #CG{
+    /*background-color: #7a1831;*/
+    /*color: #c1bcbd;*/
+  }
+  .accordion {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: black;
+  color: lightgreen;
+  cursor: pointer;
+  padding: 18px;
+  width: 60%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.4s;
+}
+.quickplay {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: black;
+  color: lightgreen;
+  cursor: pointer;
+  padding: 18px;
+  width: 60%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .accordion:hover {
+  background-color: black;
+}
+
+.panel {
+  padding: 0 18px;
+  background-color: black;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+}
+.paragraph {
+    width:20%;
+    float: left;
+}
+.clearfix{
+    clear:both
+}
+.controllertext{
+    background: transparent;
+    color: green;
+    border: none;
+    font-family: 'Courier New', Courier, monospace;
+}
+.distancetext {
+    width: 60px;
+    background-color: lightgray;
+    border-color: darkgray;
+    font-family: 'Courier New', Courier, monospace;
+}
+.configtext {
+    background-color: lightgray;
+    border-color: darkgray;
+    font-family: 'Courier New', Courier, monospace;
+}
+</style>
+
+<body>
+  <h1> SPACEHUNT</h1>
+  <br>
+
+  <div class="paragraph">
+  <p>
+  <p style="font-size:20px;"><b> OLD SPICE CONTROLS </b></p>
+  <form>
+  <br> &nbsp;
+  &emsp;&emsp;&ensp;&thinsp;&thinsp; <button type ="button"  value="90" onclick="move('90')"><img src="up-arrow.png" height="42" width="42"></button>
+  <br> &nbsp;
+  <button type ="button"  value="180" onclick="move('180')"><img src="up-arrow.png" height="42" width="42" style="transform:rotate(270deg);"></button>
+  <button type ="button"  value="270" onclick="move('270')"><img src="up-arrow.png" height="42" width="42" style="transform:rotate(180deg);"></button>
+  <button type ="button"  value="0" onclick="move('0')"><img src="up-arrow.png" height="42" width="42" style="transform:rotate(90deg);"></button>
+  </form>
+  <form>
+  <input type="button" hidden="hidden" value="90" onclick="move('90')" accesskey="i">
+  <input type="button" hidden="hidden" value="180" onclick="move('180')" accesskey="j">
+  <input type="button" hidden="hidden" value="270" onclick="move('270')" accesskey="k">
+  <input type="button" hidden="hidden" value="0" onclick="move('0')" accesskey="l">
+  </form>
+  </p>
+  </div>
+  <!--<input type="button" value = "Deploy Sensors" onclick="sensors()">-->
+
+
+  <div class="paragraph">
+  <p>
+  <p style="font-size:20px;"><b> STATUS </b></p>
+  <br>
+
+  <form>
+  Distance:&thinsp; <input type="number" value="1" id="distance" class="distancetext">
+  <br>
+  Location: <input type="text" placeholder="(X,Y)" id="currentLoc" class="controllertext">
+  <br>
+  Message:&emsp;&ensp;<input type="text" placeholder="NOTHING TO REPORT." id="message" class="controllertext" readonly>
+  </form>
+  </p>
+  </div>
+
+  <div class="paragraph">
+  <p>
+  <br><br>
+  <form>
+  Supplies: <input type="text" placeholder="0 (supplies)" id="supplies1" class="controllertext" readonly>
+  <br>
+  Credits:&emsp;&thinsp;<input type="text" placeholder="0 (credits)" id="credits1" class="controllertext" readonly>
+  <br>
+  Energy:&emsp;&thinsp; <input type="text" placeholder="0 (energy)" id="energy1" class="controllertext" readonly>
+  </form>
+  </p>
+  </div>
+
+  <div class="paragraph">
+    <p>
+  <form>
+      <button type="button" class="quickplay" onclick = "quickGame()" id = "quickGameToggle" ><img src="quickplay.png" height="50" width="50">QUICKPLAY</button>
+  </form>
+  </p>
+  </div>
+
+  <br><br><br><br><br><br><br><br><br><br>
+  <h2 id = "status"></h2>
+  <div id = "map_div">
+    <table id = "tbl" width="100%" border="2">
+      <tbody id = "map_body">
+
+      </tbody>
+    </table>
+  </div>
+
+  <div class = "row">
+    <div id = "CG" class ="column">
+      <ul id = "list">
+      </ul>
+    </div>
+  </div>
+
+  <br>
+  
+  <button class="accordion"><img src="editor.png" height="50" width="50"> <b>CONFIG/EDITOR</b></button>
+  <div class="panel">
+  <p> 
+  <br>
+  <form> Initialize Map and Map Size:
+    <input type="text" placeholder="0 (height)" id="mapSizeX" class="configtext">&nbsp; X &nbsp;
+    <input type="text" placeholder="0 (width)" id="mapSizeY" class="configtext">
+    <input type="button" id="Toggle1" value="Add" onclick="addMap()">
+  </form>
+  <form> Initialize Ship:
+    <input type="text" placeholder="0 (x-coor)" id="shipLocX" class="configtext">
+    <input type="text" placeholder="0 (y-coor)" id="shipLocY" class="configtext">
+    <input type="text" placeholder="0 (energy)" id="energy" class="configtext">
+    <input type="text" placeholder="0 (supplies)" id="supplies" class="configtext">
+    <input type="text" placeholder="0 (credits)" id="credits" class="configtext">
+    <input type="button" id="Toggle2" value="Add" onclick="addShip()">
+  </form>
+  <form> Initialize Planet:
+    <select type="config" id="whichPlanet" class="configtext">
+      <option value=0>Xeon</option>
+      <option value=1>Ryzen</option>
+      <option value=2>Celeron</option>
+      <option value=3>Pentium 1</option>
+      <option value=4>Pentium 2</option>
+      <option value=5>Pentium 3</option>
+      <option value=6>Pentium 4</option>
+      <option value=7>Pentium 5</option>
+      <option value=8>Pentium 6</option>
+      <option value=9>Pentium 7</option>
+    </select>
+    <input type="text" placeholder="0 (x-coor)" id="planetLocX" class="configtext">
+    <input type="text" placeholder="0 (y-coor)" id="planetLocY" class="configtext">
+    <!--<input type="text" placeholder="0 (visibility)" id="visibility">-->
+    <input type="button" value="Add" id="planetToggle" onclick="addPlanet()">
+  </form>
+  <form> Initialize Meteor:
+    <input type="text" placeholder="0 (x-coor)" id="meteorLocX" class="configtext">
+    <input type="text" placeholder="0 (y-coor)" id="meteorLocY" class="configtext">
+    <!--<input type="text" placeholder="0 (visibility)" id="visibility">-->
+    <input type="button" value="Add" onclick="addMeteor()">
+  </form>
+  <form> Initialize Asteroid:
+    <input type="text" placeholder="0 (x-coor)" id="asteroidLocX" class="configtext">
+    <input type="text" placeholder="0 (y-coor)" id="asteroidLocY" class="configtext">
+    <!--<input type="text" placeholder="0 (visibility)" id="visibility">-->
+    <input type="button" value="Add" onclick="addAsteroid()">
+  </form>
+  <form> Initialize Freighter:
+    <input type="text" placeholder="0 (x-coor)" id="freighterLocX" class="configtext">
+    <input type="text" placeholder="0 (y-coor)" id="freighterLocY" class="configtext">
+    <!--<input type="text" placeholder="0 (visibility)" id="visibility">-->
+    <input type="button" value="Add" onclick="addFreighter()">
+  </form>
+  <form> Initialize SpaceStation:
+      <input type="text" placeholder="0 (x-coor)" id="spacestationLocX" class="configtext">
+      <input type="text" placeholder="0 (y-coor)" id="spacestationLocY" class="configtext">
+      <!--<input type="text" placeholder="0 (visibility)" id="visibility">-->
+      <input type="button" value="Add" onclick="addSpacestation()">
+  </form>
+  <br>
+  </p>
+  </div>
+
+  <button class="accordion"><img src="config.png" height="50" width="50"> <b> USER SETTINGS </b></button>
+  <div class="panel">
+  <p>
+  <br>
+  <form> Wormhole Random:
+    <input type="checkbox" checked=true id="wormholeRandom">
+    <input type="text" placeholder="0 (x-coor)" id="wormholeOutputX" class="configtext">
+    <input type="text" placeholder="0 (y-coor)" id="wormholeOutputY" class="configtext">
+    <input type="button" value="Submit" onclick="submitWormholeBehavior()">
+  </form>
+  <form> Play Style:
+    <select id="playStyle" class="configtext">
+      <option value=1>Regular play</option>
+      <option value=0>Never dies</option>
+    </select>
+    <input type="button" value="Submit" onclick="setGamePlay()">
+  </form>
+  <br>
+
+  <div id="div_btns">
+    <button class="btn" type="button" onclick="save()">
+      save
+    </button>
+    <button class="btn" type="button" onclick="load()">
+      load
+    </button>
+  </div>
+</p>
+</div>
+<br>
+
+  <script>
+    startGame();
+  </script>
+
+  <script>
+    var acc = document.getElementsByClassName("accordion");
+    var i;
+    
+    for (i = 0; i < acc.length; i++) {
+      acc[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.maxHeight){
+          panel.style.maxHeight = null;
+        } else {
+          panel.style.maxHeight = panel.scrollHeight + "px";
+        } 
+      });
+    }
+  </script>
+
+<script>
+  var isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    if(!isChrome){
+      $('#iframeAudio').remove()
+    }
+  else{
+     $('#playAudio').remove() //just to make sure that it will not have 2x audio in the background 
+  }
+  </script>
+
+
+</body>
+
+<iframe src="NakedCity.mp3" allow="autoplay" style="display:none" id="iframeAudio">
+  </iframe> 
+  
+  <audio autoplay loop  id="playAudio">
+      <source src="NakedCity.mp3">
+  </audio>
+  
+  <audio  id="quickplaysfx">
+      <source src="quickplay.mp3">
+  </audio>
+  
+  <audio  id="gameoversfx">
+      <source src="gameover.mp3">
+  </audio>
+  
+  <audio  id="badmaxencountersfx">
+      <source src="badmaxencounter.mp3">
+  </audio>
+  
+  <audio  id="badmaxgjsfx">
+      <source src="badmaxgj.mp3">
+  </audio>
+  
+  <audio  id="badmaxkillsfx">
+      <source src="badmaxkill.mp3">
+  </audio>
+  
+  <audio  id="badmaxhalfsfx">
+      <source src="badmaxhalf.mp3">
+  </audio>
+
+  <audio  id="freightsfx">
+      <source src="freight.mp3">
+  </audio>
+
+  <audio  id="spacestationsfx">
+      <source src="spacestation.mp3">
+  </audio>
+
+  <audio  id="spacestationlosesfx">
+      <source src="spacestationlose.mp3">
+  </audio>
+
+  <audio  id="diceroll">
+    <source src="diceroll.mp3">
+</audio>
+
+<br><br>
+</html>

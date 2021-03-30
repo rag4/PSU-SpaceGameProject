@@ -1,0 +1,3 @@
+# ignore all files starting with test_ 
+# We can use this prefix to create unit test files that will not get pushed to Github
+test_*
